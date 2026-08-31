@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ôn tập Khoa học hè 2026 - Tập hợp & BPT-HBPT</title>
+<style>
+:root{--primary:#2563eb;--primary2:#1d4ed8;--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#64748b;--ok:#15803d;--bad:#dc2626;--line:#dbe3ef}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--text);line-height:1.55}
+header{background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;padding:28px 18px;text-align:center}
+header h1{margin:0 0 6px;font-size:26px} header p{margin:0;opacity:.92}
+.container{max-width:980px;margin:22px auto;padding:0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 5px 20px #0f172a0d;margin-bottom:18px}
+.hidden{display:none!important}
+.name-box{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.name-box label{font-weight:700;display:block;margin-bottom:6px}
+input[type=text],input[type=number]{width:100%;padding:12px 13px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px}
+.name-input{flex:1;min-width:240px}
+.btn{border:0;border-radius:10px;padding:11px 17px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary2)}
+.btn-secondary{background:#e2e8f0;color:#172033}.btn-danger{background:#fee2e2;color:#991b1b}
+.topbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.progress{height:9px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin:10px 0 20px}.progress>div{height:100%;background:var(--primary);transition:.25s}
+.badge{display:inline-block;padding:4px 9px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:13px;font-weight:700}
+.question-title{font-size:19px;font-weight:700;margin:12px 0 18px}.question-title .num{color:var(--primary)}
+.option{display:block;border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin:10px 0;cursor:pointer;background:#fff;transition:.15s}
+.option:hover{background:#f8fafc;border-color:#93c5fd}.option input{margin-right:10px;transform:scale(1.15)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.notice{padding:12px 14px;background:#eff6ff;border-left:4px solid var(--primary);border-radius:8px;color:#1e3a8a}
+.tf-grid{display:grid;grid-template-columns:1fr;gap:12px}.tf-row{border:1px solid var(--line);border-radius:11px;padding:12px 14px}
+.tf-row .statement{margin-bottom:8px}.tf-actions{display:flex;gap:18px}
+.answer-input{max-width:280px}
+.result{text-align:center}.score{font-size:48px;font-weight:800;color:var(--primary);margin:5px 0}
+.result small{color:var(--muted)}
+.review-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.review-item{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}.review-item.ok{border-left:5px solid var(--ok)}.review-item.bad{border-left:5px solid var(--bad)}
+.review-item button{margin-top:10px}
+.explain{margin-top:10px;padding:10px;background:#f8fafc;border-radius:8px;font-size:14px}
+table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left}th{background:#f8fafc}
+.table-wrap{overflow:auto}
+footer{text-align:center;color:var(--muted);padding:25px}
+svg{max-width:100%;height:auto}
+@media(max-width:600px){header h1{font-size:21px}.card{padding:16px}.question-title{font-size:17px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>KIỂM TRA CUỐI KHÓA HÈ 2025</h1>
+  <p>Ôn tập: Tập hợp – Bất phương trình – Hệ bất phương trình</p>
+</header>
+
+<div class="container">
+  <section id="startScreen" class="card">
+    <h2>Thông tin học sinh</h2>
+    <div class="notice">Em nhập họ và tên rồi bấm <b>Bắt đầu làm bài</b>. Bài làm được thực hiện tuần tự.</div>
+    <div class="name-box" style="margin-top:16px">
+      <div class="name-input">
+        <label for="studentName">Họ và tên</label>
+        <input id="studentName" type="text" placeholder="Ví dụ: Nguyễn Văn An" autocomplete="name">
+      </div>
+      <button class="btn btn-primary" onclick="startTest()">Bắt đầu làm bài</button>
+    </div>
+    <p style="color:#64748b;margin-top:14px">Tổng cộng 22 câu. Điểm tối đa: 10.</p>
+  </section>
+
+  <section id="testScreen" class="card hidden">
+    <div class="topbar">
+      <span class="badge" id="partBadge"></span>
+      <b id="counter"></b>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <div id="questionArea"></div>
+    <div class="nav">
+      <button id="prevBtn" class="btn btn-secondary" onclick="prevQuestion()">← Câu trước</button>
+      <button id="nextBtn" class="btn btn-primary" onclick="nextQuestion()">Câu tiếp →</button>
+    </div>
+  </section>
+
+  <section id="resultScreen" class="card hidden">
+    <div class="result">
+      <h2>Hoàn thành bài!</h2>
+      <div id="resultName"></div>
+      <div class="score" id="scoreText"></div>
+      <small id="scoreDetail"></small>
+    </div>
+    <hr style="border:0;border-top:1px solid #e2e8f0;margin:20px 0">
+    <h3>Xem đáp án từng câu</h3>
+    <p class="notice">Sau khi hoàn thành, em có thể bấm <b>Xem đáp án</b> ở câu muốn xem. Đáp án và lời giải ngắn sẽ hiện ngay bên dưới câu đó.</p>
+    <div id="reviewGrid" class="review-grid"></div>
+  </section>
+
+  <section id="listScreen" class="card">
+    <div class="topbar">
+      <h2 style="margin:0">Danh sách kết quả đã lưu trên máy này</h2>
+      <div>
+        <button class="btn btn-primary" onclick="exportCSV()">Xuất CSV</button>
+        <button class="btn btn-danger" onclick="clearResults()">Xóa danh sách</button>
+      </div>
+    </div>
+    <div class="notice" style="margin-bottom:12px">Danh sách này lưu bằng trình duyệt (localStorage), phù hợp khi thầy/cô mở trang trên máy của mình. Nếu cần <b>tất cả học sinh tự động gửi điểm về một danh sách chung</b>, có thể nâng cấp bản này sang Google Sheets hoặc Firebase.</div>
+    <div class="table-wrap"><table><thead><tr><th>STT</th><th>Họ tên</th><th>Điểm</th><th>Thời gian</th></tr></thead><tbody id="resultsBody"></tbody></table></div>
+  </section>
+</div>
+
+<footer>Ôn tập Khoa học hè 2025 • Mã đề 001</footer>
+
+<script>
+const questions = [
+{part:"PHẦN I – Trắc nghiệm một đáp án đúng", type:"mc", text:"Mệnh đề toán học nào sau đây là mệnh đề sai?",
+ options:["Số 2 là số nguyên.","Số 2 là số hữu tỉ.","Số 2 là số hữu tỉ dương.","Số 2 không là số nguyên tố."], answer:3, explain:"Số 2 là số nguyên tố, nên mệnh đề “Số 2 không là số nguyên tố” là sai."},
+{part:"PHẦN I – Trắc nghiệm một đáp án đúng", type:"mc", text:"Cho hai tập hợp A và B. Tập hợp A ∩ B là",
+ options:["tập hợp tất cả các phần tử thuộc A hoặc thuộc B.","tập hợp tất cả các phần tử vừa thuộc A vừa thuộc B.","tập hợp các phần tử thuộc A nhưng không thuộc B.","tập hợp tất cả các phần tử thuộc B nhưng không thuộc A."], answer:1, explain:"Giao A ∩ B gồm các phần tử đồng thời thuộc A và B."},
+{part:"PHẦN I – Trắc nghiệm một đáp án đúng", type:"mc", text:"Cho tập hợp A = {x ∈ ℝ | −4 < x ≤ 3}. Mệnh đề nào sau đây đúng?",
+ options:["A = (−4; 3].","A = {−3;−2;−1;0;1;2;3}.","A = {−4;−3;−2;−1;0;1;2;3}.","A = (−3; 4]."], answer:0, explain:"Điều kiện −4 < x ≤ 3 tương ứng với khoảng (−4;3]."},
+{part:"PHẦN I – Trắc nghiệm một đáp án đúng", type:"mc", text:"Một câu lạc bộ âm nhạc gồm 100 thành viên, có 75 thành viên thích Bolero và 81 thành viên thích nhạc trẻ. Mệnh đề nào sau đây đúng?",
+ options:["Số thành viên thích cả hai dòng nhạc ít nhất bằng 56.","Số thành viên không thích cả hai dòng nhạc bằng số thành viên thích cả hai dòng nhạc.","Số thành viên chỉ thích Bolero lớn hơn 20.","Số thành viên chỉ thích nhạc trẻ bằng số thành viên chỉ thích Bolero."], answer:0, explain:"Theo công thức n(A ∩ B) ≥ 75 + 81 − 100 = 56."},
+{part:"PHẦN I – Trắc nghiệm một đáp án đúng", type:"mc", text:"Mệnh đề nào sau đây sai?",
+ options:["∀n ∈ ℕ, n² + n : 2.","∃n ∈ ℕ, 3n + 1 : 3.","Phương trình 2x² − x = 0 có nghiệm.","∃n ∈ ℕ, n + 1 : n."], answer:1, explain:"Với mọi n, 3n + 1 chia cho 3 dư 1, nên không chia hết cho 3."},
+{part:"PHẦN I – Trắc nghiệm một đáp án đúng", type:"mc", text:"Cho hai tập hợp A và B được minh họa bằng biểu đồ Ven. Phần tô màu xám là biểu diễn của tập hợp nào?",
+svg:`<div style="text-align:center">
+<img src="q6.png" style="width:360px;max-width:100%;">
+</div>`,
+ options:["A ∩ B","A ∪ B","B \\ A","A \\ B"], answer:2, explain:"Phần tô xám là phần thuộc B nhưng không thuộc A, tức B \\ A."},
+{part:"PHẦN I – Trắc nghiệm một đáp án đúng", type:"mc", text:"Mệnh đề phủ định của mệnh đề P: “∃x ∈ ℝ: x² + 2x + 5 là số nguyên tố” là",
+ options:["∃x ∈ ℝ: x² + 2x + 5 là hợp số.","∀x ∈ ℝ: x² + 2x + 5 là hợp số.","∀x ∈ ℝ: x² + 2x + 5 không là số nguyên tố.","∃x ∈ ℝ: x² + 2x + 5 là số thực."], answer:2, explain:"Phủ định của “∃x: P(x)” là “∀x: không P(x)”. Ở đây: ∀x ∈ ℝ, biểu thức không là số nguyên tố."},
+{part:"PHẦN I – Trắc nghiệm một đáp án đúng", type:"mc", text:"Cho mệnh đề “Có một học sinh trong lớp 10A không chấp hành luật giao thông”. Mệnh đề phủ định là:",
+ options:["Mọi học sinh trong lớp 10A không chấp hành luật giao thông.","Không có học sinh nào trong lớp 10A chấp hành luật giao thông.","Có một học sinh trong lớp 10A chấp hành luật giao thông.","Mọi học sinh trong lớp 10A đều chấp hành luật giao thông."], answer:3, explain:"Phủ định của “có một học sinh không chấp hành” là “mọi học sinh đều chấp hành”."},
+{part:"PHẦN I – Trắc nghiệm một đáp án đúng", type:"mc", text:"Cho A = {x ∈ ℝ | x < 3} và B = {x ∈ ℤ | −4 ≤ x < 2}. Xác định A ∩ B.",
+ options:["{x ∈ ℝ | −4 ≤ x < 3}","{x ∈ ℝ | 0 ≤ x ≤ 1}","{x ∈ ℤ | 0 ≤ x < 1}","{x ∈ ℤ | −4 ≤ x < 3}"], answer:1, explain:"Theo đáp án của đề: A ∩ B = {x ∈ ℝ | 0 ≤ x ≤ 1}."},
+{part:"PHẦN I – Trắc nghiệm một đáp án đúng", type:"mc", text:"Cho tập hợp S = {x ∈ ℤ | 2 < x ≤ 4}. Mệnh đề nào sau đây đúng?",
+ options:["S = (2;4).","S = (2;4].","S = {2;3;4}.","S = {3;4}."], answer:3, explain:"Vì x là số nguyên và 2 < x ≤ 4 nên S = {3;4}."},
+{part:"PHẦN I – Trắc nghiệm một đáp án đúng", type:"mc", text:"Cho A = {x ∈ ℝ | 2 ≤ x < 5} và B = {x ∈ ℝ | −4 < 3x + 2 < 11}. Xác định A \\ B.",
+ options:["[3;5).","[−2;2).","(3;5).","[−2;2]."], answer:0, explain:"−4 < 3x+2 < 11 ⇔ −2 < x < 3. Do đó A \\ B = [3;5)."},
+{part:"PHẦN I – Trắc nghiệm một đáp án đúng", type:"mc", text:"Bất phương trình nào sau đây là bất phương trình bậc nhất hai ẩn?",
+ options:["x² + 2y > 3.","4²x − 4y > 0.","x + xy > −1.","2x + y − z > 0."], answer:1, explain:"Theo đáp án của đề, phương án B được chọn."},
+
+{part:"PHẦN II – Trắc nghiệm đúng/sai", type:"tf", text:"Cho A = {x ∈ ℝ | −1 ≤ x < 6}, B = {x ∈ ℝ | 2x − 6 ≤ 0}.",
+ statements:[
+ "a) A ∩ B = [−1;3].","b) A ∪ B = (−∞;3).","c) A \\ B = [3;6).","d) CℝB = (3;+∞)."
+ ], answers:[true,false,false,true], explain:"Theo đáp án: a Đ, b S, c S, d Đ."},
+{part:"PHẦN II – Trắc nghiệm đúng/sai", type:"tf", text:"Một cuộc thi bắn cung có 20 người. Lần 1 có 18 người trúng, lần 2 có 15 người trúng, lần 3 có 10 người trúng.",
+ statements:[
+ "a) Số người bắn trượt lần đầu tiên là 2.","b) Số người bắn trượt lần thứ hai là 6.","c) Số người bắn trượt mục tiêu trong lần thứ nhất và thứ hai nhiều nhất là 8.","d) Số người bắn trúng mục tiêu trong cả ba lần bắn ít nhất là 3."
+ ], answers:[true,false,false,true], explain:"Theo đáp án của đề: a Đ, b S, c S, d Đ. Lần 1 trượt 2; lần 2 trượt 5; tổng số lượt trượt của hai lần đầu nhiều nhất là 7; kết luận d theo lời giải của đề."},
+{part:"PHẦN II – Trắc nghiệm đúng/sai", type:"tf", text:"Cho bất phương trình bậc nhất hai ẩn 3x − 2y ≥ −6.",
+ statements:[
+ "a) (1;1) là một nghiệm của bất phương trình đã cho.","b) Bất phương trình đã cho có nghiệm tùy ý.","c) Bất phương trình đã cho có vô số nghiệm.","d) Miền nghiệm là miền không gạch sọc có hình bên dưới."
+ ], answers:[true,false,true,false], svg:`<div style="text-align:center">
+<img src="q7.png" style="width:360px;max-width:100%;">
+</div>`,
+ explain:"Theo đáp án: a Đ, b S, c Đ, d S; miền nghiệm là miền chứa O."},
+{part:"PHẦN II – Trắc nghiệm đúng/sai", type:"tf", text:"Lớp 10A có 40 học sinh, 27 học sinh tham gia CLB bóng rổ và 25 học sinh tham gia CLB bóng đá.",
+ statements:[
+ "a) Số học sinh tham gia bóng rổ hoặc bóng đá nhiều nhất là 40.","b) Số học sinh tham gia cả hai CLB ít nhất là 10.","c) Số học sinh không tham gia cả hai CLB ít nhất là 1.","d) Số học sinh không tham gia cả hai CLB nhiều nhất là 10."
+ ], answers:[true,false,false,false], explain:"Theo lời giải: số học sinh tham gia cả hai ít nhất là 12; số học sinh không tham gia cả hai nằm từ 0 đến 13. Vì vậy a Đ, b S, c S, d S."},
+
+{part:"PHẦN III – Trắc nghiệm trả lời ngắn", type:"short", text:"Cho hệ bất phương trình bậc nhất hai ẩn có miền nghiệm là hình tứ giác OABC. Biết O(0;0), A(2;2), B(3;1), C(1;−1). Giá trị lớn nhất của L = 2x + y bằng bao nhiêu?",
+ answer:"7", explain:"Tính L tại các đỉnh: L(O)=0, L(A)=6, L(B)=7, L(C)=1. Vậy giá trị lớn nhất là 7."},
+{part:"PHẦN III – Trắc nghiệm trả lời ngắn", type:"short", text:"Có 100 tấm thẻ đánh số từ 1 đến 100, ban đầu đều ngửa. Lần 1 lật các thẻ chia hết cho 2; lần 2 lật các thẻ chia hết cho 5. Hỏi sau lần thứ hai có bao nhiêu thẻ sấp?",
+ answer:"50", explain:"Thẻ sấp là thẻ bị lật đúng một lần: (50−10)+(20−10)=50."},
+{part:"PHẦN III – Trắc nghiệm trả lời ngắn", type:"short", text:"Một hộp A cần 0,2 kg cà chua và 0,1 kg thịt; hộp B cần 0,2 kg cà chua và 0,3 kg thịt. Lợi nhuận lần lượt 4000 và 5000 đồng. Có 2 kg cà chua và 2 kg thịt. Lợi nhuận lớn nhất là bao nhiêu nghìn đồng?",
+ answer:"45", explain:"Đặt x,y là số hộp A,B. Lợi nhuận P=4x+5y (nghìn đồng). Theo lời giải, đạt lớn nhất tại x=y=5, nên P=45 nghìn đồng."},
+{part:"PHẦN III – Trắc nghiệm trả lời ngắn", type:"short", text:"CLB Lịch sử có 12 thành viên. Chuyên đề 1 có 7 người; chuyên đề 2 có 8 người; có 5 người tham gia cả hai. Hỏi có bao nhiêu thành viên vắng cả hai chuyên đề?",
+ answer:"2", explain:"Số người tham gia ít nhất một chuyên đề = 7+8−5=10. Vậy vắng cả hai = 12−10=2."},
+{part:"PHẦN III – Trắc nghiệm trả lời ngắn", type:"short", text:"Cho A=[0;5], B=(3a;3a+1]. Có tất cả bao nhiêu số nguyên a để A ∩ B ≠ ∅?",
+ answer:"2", explain:"Theo lời giải của đề, điều kiện tương đương −1/3 ≤ a < 5/3. Với a nguyên, a ∈ {0;1}, nên có 2 giá trị."},
+{part:"PHẦN III – Trắc nghiệm trả lời ngắn", type:"short", text:"Công ty vận tải cần ít nhất 23 tấn A, ít nhất 59 tấn B và không quá 139 tấn C. Xe X chở 12A, 6B, 18C, giá 37 triệu; xe Y chở 2A, 20B, 22C, giá 45 triệu. Nếu T là chi phí nhỏ nhất (triệu đồng), hỏi 10T bằng bao nhiêu?",
+ answer:"2090", explain:"Theo lời giải, các cặp nguyên khả thi gồm (2;3),(2;4),(3;3),(4;2),(4;3),(5;2). Chi phí nhỏ nhất tại (x,y)=(2,3): T=37·2+45·3=209, nên 10T=2090."}
+];
+
+let current=0, answers={}, student="";
+function startTest(){
+  student=document.getElementById("studentName").value.trim();
+  if(!student){alert("Em hãy nhập họ và tên.");return;}
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("listScreen").classList.add("hidden");
+  document.getElementById("testScreen").classList.remove("hidden");
+  current=0; answers={}; renderQuestion();
+}
+function renderQuestion(){
+  const q=questions[current];
+  document.getElementById("partBadge").textContent=q.part;
+  document.getElementById("counter").textContent=`Câu ${current+1}/${questions.length}`;
+  document.getElementById("progressBar").style.width=((current+1)/questions.length*100)+"%";
+  let h=`<div class="question-title"><span class="num">Câu ${current+1}:</span> ${q.text}</div>`;
+  if(q.svg) h+=q.svg;
+  if(q.type==="mc"){
+    h+=q.options.map((o,i)=>`<label class="option"><input type="radio" name="ans" value="${i}" ${answers[current]===i?"checked":""}> <b>${String.fromCharCode(65+i)}.</b> ${o}</label>`).join("");
+  } else if(q.type==="tf"){
+    h+=`<div class="tf-grid">`+q.statements.map((s,i)=>{
+      const v=answers[current]?.[i];
+      return `<div class="tf-row"><div class="statement">${s}</div><div class="tf-actions">
+        <label><input type="radio" name="tf${i}" value="true" ${v===true?"checked":""}> Đúng</label>
+        <label><input type="radio" name="tf${i}" value="false" ${v===false?"checked":""}> Sai</label>
+      </div></div>`;
+    }).join("")+`</div>`;
+  } else {
+    h+=`<label><b>Nhập đáp số:</b></label><br><input class="answer-input" id="shortAnswer" type="text" inputmode="decimal" placeholder="Nhập đáp số" value="${answers[current]??""}">`;
+  }
+  document.getElementById("questionArea").innerHTML=h;
+  document.getElementById("prevBtn").disabled=current===0;
+  document.getElementById("nextBtn").textContent=current===questions.length-1?"Nộp bài ✓":"Câu tiếp →";
+}
+function saveCurrent(){
+  const q=questions[current];
+  if(q.type==="mc"){
+    const el=document.querySelector('input[name="ans"]:checked');
+    if(!el)return false;
+    answers[current]=Number(el.value);
+  }else if(q.type==="tf"){
+    const vals=[];
+    for(let i=0;i<q.statements.length;i++){
+      const el=document.querySelector(`input[name="tf${i}"]:checked`);
+      if(!el)return false;
+      vals[i]=el.value==="true";
+    }
+    answers[current]=vals;
+  }else{
+    const v=document.getElementById("shortAnswer").value.trim();
+    if(!v)return false;
+    answers[current]=v.replace(",",".");
+  }
+  return true;
+}
+function nextQuestion(){
+  if(!saveCurrent()){alert("Em hãy trả lời câu này trước khi chuyển sang câu tiếp theo.");return;}
+  if(current<questions.length-1){current++;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});}
+  else finishTest();
+}
+function prevQuestion(){
+  saveCurrent();
+  if(current>0){current--;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});}
+}
+function isCorrect(q,i){
+  const a=answers[i];
+  if(q.type==="mc")return a===q.answer;
+  if(q.type==="tf")return Array.isArray(a)&&a.length===q.answers.length&&a.every((x,k)=>x===q.answers[k]);
+  return normalize(a)===normalize(q.answer);
+}
+function normalize(s){return String(s??"").trim().replace(/\s+/g,"").replace(",",".").toLowerCase();}
+function calcScore(){
+  let score=0;
+  questions.forEach((q,i)=>{
+    if(q.type==="mc" && isCorrect(q,i)) score+=0.25;
+    else if(q.type==="tf"){
+      // Mỗi câu Đ/S tối đa 1 điểm; mỗi ý đúng 0.25 điểm.
+      const a=answers[i]||[];
+      q.answers.forEach((v,k)=>{if(a[k]===v)score+=0.25;});
+    } else if(q.type==="short" && isCorrect(q,i)) score+=0.5;
+  });
+  return Math.round(score*100)/100;
+}
+function answerText(q){
+  if(q.type==="mc") return String.fromCharCode(65+q.answer);
+  if(q.type==="tf") return q.answers.map((x,i)=>String.fromCharCode(97+i)+") "+(x?"Đ":"S")).join(" • ");
+  return q.answer;
+}
+function finishTest(){
+  const score=calcScore();
+  const result={name:student,score,time:new Date().toLocaleString("vi-VN"),stamp:Date.now()};
+  const arr=JSON.parse(localStorage.getItem("onTapKhoaHocHe2025")||"[]");
+  arr.push(result); localStorage.setItem("onTapKhoaHocHe2025",JSON.stringify(arr));
+  document.getElementById("testScreen").classList.add("hidden");
+  document.getElementById("resultScreen").classList.remove("hidden");
+  document.getElementById("resultName").innerHTML=`Học sinh: <b>${escapeHtml(student)}</b>`;
+  document.getElementById("scoreText").textContent=score.toFixed(2)+"/10";
+  document.getElementById("scoreDetail").textContent="Phần I: 12 câu × 0,25 điểm; Phần II: 4 câu × 1 điểm; Phần III: 6 câu × 0,5 điểm.";
+  renderReview();
+  renderResults();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function renderReview(){
+  document.getElementById("reviewGrid").innerHTML=questions.map((q,i)=>{
+    const ok=isCorrect(q,i);
+    return `<div class="review-item ${ok?"ok":"bad"}">
+      <b>Câu ${i+1}</b> — ${ok?"Đúng":"Chưa đúng"}<br>
+      <span>Đáp án: <b>${answerText(q)}</b></span><br>
+      <button class="btn btn-secondary" onclick="toggleExplain(${i})">Xem đáp án & lời giải</button>
+      <div id="exp${i}" class="explain hidden">${q.explain}</div>
+    </div>`;
+  }).join("");
+}
+function toggleExplain(i){document.getElementById("exp"+i).classList.toggle("hidden");}
+function renderResults(){
+  const arr=JSON.parse(localStorage.getItem("onTapKhoaHocHe2025")||"[]");
+  document.getElementById("resultsBody").innerHTML=arr.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(r.name)}</td><td><b>${Number(r.score).toFixed(2)}</b></td><td>${escapeHtml(r.time)}</td></tr>`).join("") || `<tr><td colspan="4">Chưa có kết quả.</td></tr>`;
+}
+function exportCSV(){
+  const arr=JSON.parse(localStorage.getItem("onTapKhoaHocHe2025")||"[]");
+  if(!arr.length){alert("Chưa có dữ liệu để xuất.");return;}
+  let csv="STT,Họ tên,Điểm,Thời gian\n";
+  arr.forEach((r,i)=>csv+=`${i+1},"${String(r.name).replace(/"/g,'""')}",${r.score},"${r.time}"\n`);
+  const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="ket-qua-on-tap-khoa-hoc-he-2025.csv";a.click();URL.revokeObjectURL(a.href);
+}
+function clearResults(){
+  if(confirm("Xóa toàn bộ danh sách kết quả trên máy này?")){localStorage.removeItem("onTapKhoaHocHe2025");renderResults();}
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+renderResults();
+</script>
+</body>
+</html>
